@@ -16,52 +16,64 @@ export function Preview({ config }: PreviewProps) {
         resize: 'both'
       }}
     >
-      {config.layers.map((layer) => {
-        let animationName: string;
-        switch (layer.animationType) {
-          case 'moveInCircle':
-            animationName = 'moveInCircle';
-            break;
-          case 'moveVertical':
-            animationName = 'moveVertical';
-            break;
-          case 'moveHorizontal':
-            animationName = 'moveHorizontal';
-            break;
-          default:
-            animationName = 'none';
-        }
+      <div style={{ width: '100%', height: '100%', filter: 'url(#goo) blur(40px)' }}>
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="goo">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+              <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo" />
+              <feBlend in="SourceGraphic" in2="goo" />
+            </filter>
+          </defs>
+        </svg>
 
-        // Build a radial gradient from the colors array. If more than two colors, join them properly.
-        // For simplicity, assume first is the main color and second is the transparent fade-out.
-        const gradientStr = layer.colors.length === 2
-          ? `radial-gradient(circle at center, ${layer.colors[0]}, ${layer.colors[1]} 50%)`
-          : `radial-gradient(circle at center, ${layer.colors.join(', ')})`;
+        {config.layers.map((layer) => {
+          let animationName: string;
+          switch (layer.animationType) {
+            case 'moveInCircle':
+              animationName = 'moveInCircle';
+              break;
+            case 'moveVertical':
+              animationName = 'moveVertical';
+              break;
+            case 'moveHorizontal':
+              animationName = 'moveHorizontal';
+              break;
+            default:
+              animationName = 'none';
+          }
 
-        const transformOriginX = layer.transformOrigin?.x ?
-          `calc(${layer.transformOrigin.x.base || 50}% + ${layer.transformOrigin.x.offset || 0}px)` : 'center'
+          // Build a radial gradient from the colors array. If more than two colors, join them properly.
+          // For simplicity, assume first is the main color and second is the transparent fade-out.
+          const gradientStr = layer.colors.length === 2
+            ? `radial-gradient(circle at center, ${layer.colors[0]}, ${layer.colors[1]} 50%)`
+            : `radial-gradient(circle at center, ${layer.colors.join(', ')})`;
 
-        const transformOriginY = layer.transformOrigin?.y ?
-          `calc(${layer.transformOrigin.y.base || 50}% + ${layer.transformOrigin.y.offset || 0}px)` : 'center'
+          const transformOriginX = layer.transformOrigin?.x ?
+            `calc(${layer.transformOrigin.x.base || 50}% + ${layer.transformOrigin.x.offset || 0}px)` : 'center'
 
-        return (
-          <div
-            key={layer.id}
-            style={{
-              position: 'absolute',
-              top: `calc(${layer.position.top} - ${layer.size}/2)`,
-              left: `calc(${layer.position.left} - ${layer.size}/2)`,
-              width: layer.size,
-              height: layer.size,
-              mixBlendMode: layer.blendMode as MixBlendMode,
-              background: gradientStr,
-              animation: animationName !== 'none' ? `${animationName} ${layer.animationDuration}s ${layer.animationTimingFunction ?? 'ease'} infinite` : 'none',
-              opacity: layer.opacity,
-              transformOrigin: `${transformOriginX} ${transformOriginY}`
-            }}
-          />
-        );
-      })}
+          const transformOriginY = layer.transformOrigin?.y ?
+            `calc(${layer.transformOrigin.y.base || 50}% + ${layer.transformOrigin.y.offset || 0}px)` : 'center'
+
+          return (
+            <div
+              key={layer.id}
+              style={{
+                position: 'absolute',
+                top: `calc(${layer.position.top} - ${layer.size}/2)`,
+                left: `calc(${layer.position.left} - ${layer.size}/2)`,
+                width: layer.size,
+                height: layer.size,
+                mixBlendMode: layer.blendMode as MixBlendMode,
+                background: gradientStr,
+                animation: animationName !== 'none' ? `${animationName} ${layer.animationDuration}s ${layer.animationTimingFunction ?? 'ease'} infinite` : 'none',
+                opacity: layer.opacity,
+                transformOrigin: `${transformOriginX} ${transformOriginY}`
+              }}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -23,3 +23,7 @@
   position: relative;
   overflow: hidden;
 }
+
+svg {
+  display: none;
+}
